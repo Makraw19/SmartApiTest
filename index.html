@@ -34,11 +34,13 @@
                 <div class="grid">
                     <div class="card">
                         <h3 class="section-title">Upload Specification</h3>
-                        <div class="upload-area">
+                        <div class="upload-area" id="uploadArea">
                              <div class="upload-icon">📄</div>
                              <p><strong>Drop OpenAPI/Swagger file here</strong></p>
-                             <p style="color: var(--text-medium); font-size: 14px; margin-top: 8px;">Supports .json & .yaml</p>
+                             <p style="color: var(--text-medium); font-size: 14px; margin-top: 8px;">or click to browse</p>
                         </div>
+                        <input type="file" id="fileInput" hidden accept=".json,.yaml,.yml">
+                        <div id="fileInfo" class="file-info" style="display: none;"></div>
                     </div>
                     <div class="card">
                          <h3 class="section-title">Manual Entry</h3>
