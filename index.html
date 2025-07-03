@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART API Testing - Enhanced Interactive Wireframe</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="wireframe-container">
+        <header class="app-header">
+            <h1 class="app-title">🚀 SMART API Tester</h1>
+            <p class="app-subtitle">AI-Powered Test Generation for Modern APIs</p>
+        </header>
+
+        <nav class="navigation">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-screen="input">1. Input</button>
+                <button class="nav-tab" data-screen="config">2. Configure</button>
+                <button class="nav-tab" data-screen="generate">3. Generate</button>
+                <button class="nav-tab" data-screen="results">4. Results</button>
+            </div>
+        </nav>
+
+        <main>
+            <div class="screen active" id="input">
+                <div class="screen-header">
+                    <h2 class="screen-title">🎯 API Specification Input</h2>
+                    <p class="screen-subtitle">Upload an OpenAPI file or manually define your API endpoints.</p>
+                </div>
+                <div class="grid">
+                    <div class="card">
+                        <h3 class="section-title">Upload Specification</h3>
+                        <div class="upload-area">
+                             <div class="upload-icon">📄</div>
+                             <p><strong>Drop OpenAPI/Swagger file here</strong></p>
+                             <p style="color: var(--text-medium); font-size: 14px; margin-top: 8px;">Supports .json & .yaml</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                         <h3 class="section-title">Manual Entry</h3>
+                         <div class="form-group">
+                            <label class="form-label">API Base URL</label>
+                            <input type="text" class="form-input" placeholder="https://api.example.com/v1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Authentication</label>
+                            <select class="form-select">
+                                <option>None</option>
+                                <option>Bearer Token</option>
+                                <option>API Key</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                 <div class="action-buttons">
+                    <button class="button button-primary" onclick="showScreen('config')">Continue →</button>
+                </div>
+            </div>
+
+            <div class="screen" id="config">
+                 <div class="screen-header">
+                    <h2 class="screen-title">⚙️ Test Configuration</h2>
+                    <p class="screen-subtitle">Select the types of tests you want the AI to generate.</p>
+                </div>
+                <div>
+                    <h3 class="section-title">Test Categories</h3>
+                     <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="checkbox" checked> Happy Path</label>
+                        <label class="checkbox-item"><input type="checkbox" checked> Field Validation</label>
+                        <label class="checkbox-item"><input type="checkbox" checked> Edge Cases</label>
+                        <label class="checkbox-item"><input type="checkbox" checked> Boundary Value</label>
+                    </div>
+                </div>
+                 <div style="margin-top: 30px;">
+                    <h3 class="section-title">Security Checks</h3>
+                     <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="checkbox" checked> SQL Injection</label>
+                        <label class="checkbox-item"><input type="checkbox" checked> Auth Bypass</label>
+                        <label class="checkbox-item"><input type="checkbox"> Rate Limiting</label>
+                        <label class="checkbox-item"><input type="checkbox"> Data Exposure</label>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="button button-secondary" onclick="showScreen('input')">← Back</button>
+                    <button class="button button-primary" onclick="showScreen('generate')">Generate Tests →</button>
+                </div>
+            </div>
+
+            <div class="screen" id="generate">
+                <div class="screen-header">
+                    <h2 class="screen-title">🤖 Generating Test Cases</h2>
+                    <p class="screen-subtitle">Our AI is analyzing your API and crafting test scenarios...</p>
+                </div>
+                <h3 class="section-title">Generation Progress</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+                <p id="progressText" style="text-align: center; color: var(--text-medium); margin-bottom: 30px;">Initializing...</p>
+
+                <h3 class="section-title">Live Log</h3>
+                <div id="generationLog"></div>
+
+                <div class="action-buttons">
+                    <button class="button button-primary" id="viewResultsBtn" onclick="showScreen('results')" style="display: none;">View Results →</button>
+                </div>
+            </div>
+            
+            <div class="screen" id="results">
+                 <div class="screen-header">
+                    <h2 class="screen-title">✨ Generated Test Cases</h2>
+                    <p class="screen-subtitle">42 test cases generated. Review, run, and export.</p>
+                </div>
+                <h3 class="section-title">Summary</h3>
+                <div class="grid-responsive">
+                    <div class="card">
+                        <h4>By Category</h4>
+                        <p>Happy Path: <strong>15</strong></p>
+                        <p>Validation: <strong>12</strong></p>
+                        <p>Security: <strong>10</strong></p>
+                        <p>Edge Cases: <strong>5</strong></p>
+                    </div>
+                    <div class="card">
+                        <h4>By Endpoint</h4>
+                        <p>POST /users: <strong>18</strong></p>
+                        <p>GET /users/{id}: <strong>12</strong></p>
+                        <p>PUT /users/{id}: <strong>12</strong></p>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top:30px;">Test Cases</h3>
+                <div id="resultsList">
+                    <div class="test-case-item">
+                        <button class="copy-btn" title="Copy" onclick="copyToClipboard(this, 'POST /users - Create user with valid data')">📋</button>
+                        <div class="test-case-header">
+                            <strong>POST /users - Create with valid data</strong>
+                            <span class="test-case-type">Happy Path</span>
+                        </div>
+                        <p style="color: var(--text-medium);">Asserts a 201 Created response for a valid payload.</p>
+                    </div>
+                     <div class="test-case-item">
+                        <button class="copy-btn" title="Copy" onclick="copyToClipboard(this, 'GET /users/{id} - Attempt SQL Injection')">📋</button>
+                        <div class="test-case-header">
+                            <strong>GET /users/{id} - Attempt SQL Injection</strong>
+                            <span class="test-case-type security-badge">Security</span>
+                        </div>
+                        <p style="color: var(--text-medium);">Sends `' or 1=1;--` in ID param. Asserts non-500 response.</p>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="button button-secondary" onclick="showScreen('input')">Start Over</button>
+                    <button class="button button-primary">Export as Postman Collection</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
