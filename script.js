@@ -1,11 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Screen Navigation ---
+    // --- Global Variables ---
     const screens = document.querySelectorAll('.screen');
     const navTabs = document.querySelectorAll('.nav-tab');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfoDiv = document.getElementById('fileInfo');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const generationLog = document.getElementById('generationLog');
+    const viewResultsBtn = document.getElementById('viewResultsBtn');
 
+    // --- Screen Navigation ---
     function showScreen(screenId) {
         screens.forEach(screen => screen.classList.remove('active'));
-        document.getElementById(screenId)?.classList.add('active');
+        const activeScreen = document.getElementById(screenId);
+        if (activeScreen) {
+            activeScreen.classList.add('active');
+        }
 
         navTabs.forEach(tab => {
             tab.classList.remove('active');
@@ -23,7 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.addEventListener('click', () => showScreen(tab.getAttribute('data-screen')));
     });
 
-    window.showScreen = showScreen; // Make function globally accessible for inline onclick attributes
+    // Make functions globally accessible for inline onclick attributes in the HTML
+    window.showScreen = showScreen;
 
     // --- Copy to Clipboard ---
     function copyToClipboard(btn, text) {
@@ -33,14 +45,84 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { btn.innerHTML = originalText; }, 1500);
         });
     }
-    window.copyToClipboard = copyToClipboard; // Make function globally accessible
+    window.copyToClipboard = copyToClipboard;
 
-    // --- Generation Simulation ---
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    const generationLog = document.getElementById('generationLog');
-    const viewResultsBtn = document.getElementById('viewResultsBtn');
-    
+    // --- File Upload Functionality ---
+    async function handleFile(file) {
+        if (!file) return;
+
+        fileInfoDiv.textContent = `Processing file: ${file.name}...`;
+        fileInfoDiv.style.display = 'block';
+
+        const reader = new FileReader();
+
+        reader.onload = async (event) => {
+            const fileContent = event.target.result;
+            
+            try {
+                // IMPORTANT: Replace with your actual Render URL
+                const serverUrl = 'https://your-service-name.onrender.com/generate-tests';
+                
+                const response = await fetch(serverUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ openapi_spec: fileContent }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Something went wrong on the server.');
+                }
+
+                const data = await response.json();
+                
+                fileInfoDiv.textContent = `Successfully generated ${data.testCases.length} test cases!`;
+                console.log("Generated Test Cases:", data.testCases); 
+                
+                // TODO: Add your logic here to take the test cases from `data.testCases` 
+                // and display them in the "Results" screen UI.
+
+            } catch (error) {
+                fileInfoDiv.textContent = `Error: ${error.message}`;
+                console.error('Failed to generate test cases:', error);
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+
+    if (uploadArea) {
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+    }
+
+    // --- Generation Simulation (Placeholder) ---
     function typeLog(line, onComplete) {
         let i = 0;
         const logElement = document.createElement('div');
@@ -61,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function simulateProgress() {
-        // Clear any existing interval
         if (window.simulationInterval) clearInterval(window.simulationInterval);
         
         progressFill.style.width = '0%';
@@ -71,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const steps = [
             { percent: 25, log: { text: "Parsing API specification...", type: 'info' } },
-            { percent: 25, log: { text: "Found 3 endpoints: /users, /users/{id}, /users/{id}", type: 'success' } },
             { percent: 50, log: { text: "Generating Happy Path & Validation tests...", type: 'info' } },
             { percent: 75, log: { text: "Crafting Security tests (SQLi, Auth)...", type: 'info' } },
             { percent: 100, log: { text: "Finalizing Edge Cases and exporting...", type: 'info' } },
@@ -95,54 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
         nextStep();
     }
 
-    // --- File Upload Functionality ---
-    const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const fileInfo = document.getElementById('fileInfo');
-
-    if (uploadArea) {
-        // 1. Click to browse
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        // 2. Drag and Drop
-        uploadArea.addEventListener('dragover', (event) => {
-            event.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (event) => {
-            event.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files; // Assign dropped files to input
-                handleFile(files[0]);
-            }
-        });
-        
-        // 3. Handle file selection from browse
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length > 0) {
-                handleFile(fileInput.files[0]);
-            }
-        });
-
-        // 4. Function to process the file
-        function handleFile(file) {
-            fileInfo.textContent = `File selected: ${file.name}`;
-            fileInfo.style.display = 'block';
-        }
-    }
-
-    // In script.js, update this line
-    const response = await fetch('https://smartapitest.onrender.com/', {
-    // ... rest of the fetch call
-});
-
-    // Set initial screen
+    // Set initial screen on page load
     showScreen('input');
 });
