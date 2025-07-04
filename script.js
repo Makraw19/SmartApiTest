@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const fileContent = event.target.result;
             
             try {
-                // IMPORTANT: Replace with your actual Render URL
-                const serverUrl = 'https://smartapitest.onrender.com/';
+                // Correct and final server URL
+                const serverUrl = 'https://smartapitest.onrender.com/generate-tests';
                 
                 const response = await fetch(serverUrl, {
                     method: 'POST',
