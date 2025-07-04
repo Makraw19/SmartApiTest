@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             try {
                 // IMPORTANT: Replace with your actual Render URL
-                const serverUrl = 'https://your-service-name.onrender.com/generate-tests';
+                const serverUrl = 'https://smartapitest.onrender.com/';
                 
                 const response = await fetch(serverUrl, {
                     method: 'POST',
