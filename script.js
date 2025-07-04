@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // In script.js, update this line
-const response = await fetch('https://smartapitest.onrender.com/', {
+    const response = await fetch('https://smartapitest.onrender.com/', {
     // ... rest of the fetch call
 });
 
